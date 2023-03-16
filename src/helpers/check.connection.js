@@ -29,7 +29,7 @@ const checkOverload = () => {
   }, _SECONDS); //monitor every 5s
 };
 
-exports.module = {
+module.exports = {
   countConnect,
   checkOverload,
 };
