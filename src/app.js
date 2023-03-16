@@ -10,7 +10,9 @@ app.use(helmet());
 app.use(compression());
 
 // init db
-
+require('./dbs/init.mongo');
+const { checkOverload } = require('/helpers/check.connection');
+checkOverload();
 // init router
 app.get('/', (req, res, next) => {
   return res.status(200).json({
