@@ -1,12 +1,7 @@
-'use strict';
-
 const shopModel = require('../models/shop.model');
 const bcrypt = require('bcrypt');
-const crypto = require('node:crypto');
-const KeyTokenServices = require('./keyToken.service');
-const { createTokenPair } = require('../auth/authUtils');
-const { getInfoData } = require('../utils');
-const { BadRequestError } = require('../core/error.response');
+const crypto = require('crypto');
+
 const RoleShop = {
   SHOP: 'SHOP',
   WRITER: 'WRITER',
@@ -14,13 +9,16 @@ const RoleShop = {
   ADMIN: 'ADMIN',
 };
 
-class AccessService {
+class AccessServices {
   static signUp = async ({ name, email, password }) => {
     try {
-      //step1: check email exists
+      // step1: check email exists
       const holderShop = await shopModel.findOne({ email }).lean();
       if (holderShop) {
-        throw new BadRequestError('Error: Shop already register');
+        return {
+          code: 'xxx',
+          message: 'shop already registered!',
+        };
       }
 
       const passwordHash = await bcrypt.hash(password, 10);
@@ -29,45 +27,18 @@ class AccessService {
         name,
         email,
         password: passwordHash,
-        roles: [RoleShop.SHOP],
+        roles: RoleShop.SHOP,
       });
 
       if (newShop) {
-        //create privateKey, publicKey
-        const privateKey = crypto.randomBytes(64).toString('hex');
-        const publicKey = crypto.randomBytes(64).toString('hex');
-
-        console.log({ privateKey, publicKey }); //save collection keystore
-
-        const keyStore = await KeyTokenServices.createKeyToken({
-          userId: newShop._id,
-          publicKey,
-          privateKey,
+        //create privateKey, publickey
+        const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
+          modulusLength: 4096,
         });
 
-        if (!keyStore) {
-          throw new BadRequestError('Error: keyStore error');
-        }
-
-        // created tokens pair
-        const tokens = await createTokenPair({ userId: newShop._id, email }, publicKey, privateKey);
-        console.log(`Create Token Success`, tokens);
-
-        return {
-          code: 201,
-          metadata: {
-            shop: getInfoData({ field: ['_id', 'name', 'email'], object: newShop }),
-          },
-          tokens,
-        };
+        console.log({ privateKey, publicKey });
       }
-
-      return {
-        code: 200,
-        metadata: null,
-      };
     } catch (error) {
-      console.error(error);
       return {
         code: 'xxx',
         message: error.message,
@@ -77,4 +48,4 @@ class AccessService {
   };
 }
 
-module.exports = AccessService;
+module.exports = AccessServices;

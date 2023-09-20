@@ -1,39 +1,21 @@
 require('dotenv').config();
-const compression = require('compression');
 const express = require('express');
-const { default: helmet } = require('helmet');
 const morgan = require('morgan');
-const { checkOverload } = require('./helpers/check.connect');
+const helmet = require('helmet');
+const compression = require('compression');
 const app = express();
 
-//innit middlewares
+// init middleware
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(compression());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-//init db
+// init db
 require('./dbs/init.mongodb');
-// checkOverload();
-//innit router
-app.use('/', require('./routers'));
 
-//handle error
+// init routes
+app.use('/', require('./routes/index'));
 
-app.use((req, res, next) => {
-  const error = new Error('Not Found');
-  error.status = 404;
-  next(error);
-});
-
-app.use((error, req, res, next) => {
-  const statusCode = error.status || 500;
-  return res.status(status).json({
-    status: 'error',
-    code: statusCode,
-    message: error.message || 'Internal Server Error ',
-  });
-});
+// handling error
 
 module.exports = app;

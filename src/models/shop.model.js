@@ -1,7 +1,8 @@
-'use strict';
-const { model, Schema, Types } = require('mongoose'); // Erase if already required
+const { model, Schema } = require('mongoose'); // Erase if already required
+
 const DOCUMENT_NAME = 'Shop';
-const COLLECTION_NAME = 'Shops';
+const COLLECTION_NAME = 'shops';
+
 // Declare the Schema of the Mongo model
 var shopSchema = new Schema(
   {
@@ -34,8 +35,8 @@ var shopSchema = new Schema(
     },
   },
   {
-    timestamp: true,
-    collection: COLLECTION_NAME,
+    timestamps: true,
+    collation: COLLECTION_NAME,
   }
 );
 
