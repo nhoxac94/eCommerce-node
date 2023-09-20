@@ -3,3 +3,10 @@
 ### SignUp
 
 POST {{url_dev}}/shop/signup
+Content-Type: application/json
+
+{
+  "name" : "Shop DEV",
+  "email" : "dragonfly@gmail.com",
+  "password" : "qweqwe"
+}
