@@ -4,9 +4,10 @@
 
 POST {{url_dev}}/shop/signup
 Content-Type: application/json
+x-api-key: f9ef9b928463f155c1dbc8a4645957f46da10a0dc355535755d539b677803cb4a7d3096998e80759d6e13fb3f3eb7ff72d9a010444916e3573308176acb85c2e
 
 {
   "name" : "Shop DEV",
-  "email" : "dragonfly@gmail.com",
+  "email" : "dragonfly25@gmail.com",
   "password" : "qweqwe"
 }

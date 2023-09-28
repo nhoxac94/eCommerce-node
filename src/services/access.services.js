@@ -1,9 +1,9 @@
 const shopModel = require('../models/shop.model');
 const bcrypt = require('bcrypt');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const KeyTokenService = require('./keyToken.services');
 const { createTokenPair } = require('../auth/authUtils');
-const { getIntoData } = require('../utils/index');
+const { getInfoData } = require('../utils');
 
 const RoleShop = {
   SHOP: 'SHOP',
@@ -17,6 +17,7 @@ class AccessServices {
     try {
       // step1: check email exists
       const holderShop = await shopModel.findOne({ email }).lean();
+
       if (holderShop) {
         return {
           code: 'xxx',
@@ -35,43 +36,46 @@ class AccessServices {
 
       if (newShop) {
         //create privateKey, publickey
-        const privateKey = crypto.getRandomValues(64).toString('hex')
-        const publicKey = crypto.getRandomValues(64).toString('hex')
-
-        console.log({ privateKey, publicKey });
+        const privateKey = crypto.randomBytes(64).toString('hex');
+        const publicKey = crypto.randomBytes(64).toString('hex');
 
         const keyStores = await KeyTokenService.createKeyToken({
-          userId : newShop._id,
+          userId: newShop._id,
           publicKey,
-          privateKey
-        })
+          privateKey,
+        });
 
-        if(!keyStores) {
+        if (!keyStores) {
           return {
             code: 'xxx',
             message: 'KeyStores error!',
-          }; 
+          };
         }
 
         // create token pair
-        const tokens = await createTokenPair({
-          userId: newShop._id, email
-        }, publicKey, privateKey )
-        console.log('Create Token Success::', tokens)
+        const tokens = await createTokenPair(
+          {
+            userId: newShop._id,
+            email,
+          },
+          publicKey,
+          privateKey
+        );
+        console.log('Create Token Success::', tokens);
 
         return {
           code: 201,
-          metadata : {
-            shop: getIntoData( {fields : ['_id', 'name', 'email'] , object : newShop}),
-            tokens
-          }
-        }
+          metadata: {
+            shop: getInfoData({ fields: ['_id', 'name', 'email'], object: newShop }),
+            tokens,
+          },
+        };
       }
 
       return {
-        code : 200,
-        metadata: null
-      }
+        code: 200,
+        metadata: null,
+      };
     } catch (error) {
       return {
         code: 'xxx',

@@ -1,18 +1,19 @@
+const keyTokenModel = require('../models/keyToken.model');
+
 class KeyTokenService {
-  static createKeyToken = async ({userId, publicKey, privateKey}) => {
+  static createKeyToken = async ({ userId, publicKey, privateKey }) => {
     try {
       const tokens = await keyTokenModel.create({
         user: userId,
         publicKey,
-        privateKey
-      })
+        privateKey,
+      });
 
-      return tokens ? tokens.publicKey : null
-
+      return tokens ? tokens.publicKey : null;
     } catch (error) {
-      return error
+      return error;
     }
-  }
+  };
 }
 
-module.exports = KeyTokenService
+module.exports = KeyTokenService;
