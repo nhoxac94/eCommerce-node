@@ -14,7 +14,7 @@ app.use(compression());
 require("./dbs/init.mongodb");
 
 // init router
-
+app.use('/', require('./routes'))
 // handle error
 
 module.exports = app;
