@@ -15,6 +15,12 @@ const roleShop = {
 };
 
 class AccessService {
+  static logout = async ( keyStore ) => {
+    const delKey = await KeyTokenService.removeKeyById(keyStore._id);
+    console.log({ delKey });
+    return delKey;
+  };
+
   static login = async ({ email, password, refreshToken }) => {
     /* 
       1 - check email
@@ -50,18 +56,18 @@ class AccessService {
     );
 
     await KeyTokenService.createKeyToken({
-      refreshToken : tokens.refreshToken,
+      refreshToken: tokens.refreshToken,
       publicKey,
       privateKey,
-      userId: foundShop._id
-    })
+      userId: foundShop._id,
+    });
 
     return {
       shop: getInfoData({
         fields: ["_id", "name", "email"],
         object: foundShop,
       }),
-      tokens
+      tokens,
     };
   };
 
